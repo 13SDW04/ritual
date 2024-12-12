@@ -1,42 +1,119 @@
 #!/bin/bash
 
-# Функция для редактирования файла с использованием sed
-edit_file() {
-    local file=$1
-    local search=$2
-    local replace=$3
+# Пути к файлам config.json, Deploy.s.sol, Makefile и docker-compose.yaml
+deploy_config="~/infernet-container-starter/deploy/config.json"
+hello_world_config="~/infernet-container-starter/projects/hello-world/container/config.json"
+deploy_script="~/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
+makefile="~/infernet-container-starter/projects/hello-world/contracts/Makefile"
+docker_compose="~/infernet-container-starter/deploy/docker-compose.yaml"
 
-    if [[ -f "$file" ]]; then
-        # Используем sed для замены строки в файле
-        sed -i "s|$search|$replace|g" "$file"
-    else
-        echo "Файл $file не найден. Пропускаю..."
-    fi
+# Проверяем, существуют ли файлы
+if [[ ! -f $deploy_config ]]; then
+    echo "Файл $deploy_config не найден."
+    exit 1
+fi
+
+if [[ ! -f $hello_world_config ]]; then
+    echo "Файл $hello_world_config не найден."
+    exit 1
+fi
+
+if [[ ! -f $deploy_script ]]; then
+    echo "Файл $deploy_script не найден."
+    exit 1
+fi
+
+if [[ ! -f $makefile ]]; then
+    echo "Файл $makefile не найден."
+    exit 1
+fi
+
+if [[ ! -f $docker_compose ]]; then
+    echo "Файл $docker_compose не найден."
+    exit 1
+fi
+
+# Запрос ввода приватного ключа и версии infernet-node у пользователя
+read -p "Введите приватный ключ (с префиксом 0x): " private_key
+read -p "Введите версию infernet-node (например, 1.4.0): " infernet_version
+
+# Предустановленные значения
+rpc_url="https://mainnet.base.org/"
+registry_address="0x3B1554f346DFe5c482Bb4BA31b880c1C18412170"
+trail_head_blocks=3
+snapshot_sleep=3
+snapshot_starting_sub_id=160000
+snapshot_batch_size=800
+snapshot_sync_period=30
+
+# Функция для обновления JSON файла
+update_config() {
+    local config_file=$1
+
+    jq --arg rpc_url "$rpc_url" \
+       --arg private_key "$private_key" \
+       --arg registry_address "$registry_address" \
+       --argjson trail_head_blocks "$trail_head_blocks" \
+       --argjson snapshot_sleep "$snapshot_sleep" \
+       --argjson snapshot_starting_sub_id "$snapshot_starting_sub_id" \
+       --argjson snapshot_batch_size "$snapshot_batch_size" \
+       --argjson snapshot_sync_period "$snapshot_sync_period" \
+       '
+       .chain.rpc_url = $rpc_url |
+       .chain.registry_address = $registry_address |
+       .chain.trail_head_blocks = $trail_head_blocks |
+       .chain.wallet.private_key = $private_key |
+       .chain.snapshot_sync.sleep = $snapshot_sleep |
+       .chain.snapshot_sync.starting_sub_id = $snapshot_starting_sub_id |
+       .chain.snapshot_sync.batch_size = $snapshot_batch_size |
+       .chain.snapshot_sync.sync_period = $snapshot_sync_period |
+       del(.docker)
+       ' "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
+
+    echo "Файл $config_file успешно обновлен."
 }
 
-# Путь к файлам конфигурации
-deploy_config=~/infernet-container-starter/deploy/config.json
-hello_world_config=~/infernet-container-starter/projects/hello-world/container/config.json
+# Функция для обновления Deploy.s.sol
+update_deploy_script() {
+    local script_file=$1
 
-# Запрос ввода значений у пользователя
-read -p "Введите RPC URL (например, https://mainnet.base.org/): " rpc_url
-read -p "Введите приватный ключ (с префиксом 0x): " private_key
-read -p "Введите Registry адрес (например, 0x3B1554f346DFe5c482Bb4BA31b880c1C18412170): " registry_address
-read -p "Введите значение sleep для snapshot_sync (например, 3): " snapshot_sleep
-read -p "Введите значение starting_sub_id для snapshot_sync (например, 160000): " snapshot_starting_sub_id
-read -p "Введите значение batch_size для snapshot_sync (например, 800): " snapshot_batch_size
-read -p "Введите значение sync_period для snapshot_sync (например, 30): " snapshot_sync_period
+    sed -i "s/address registry .*/address registry = $registry_address;/" "$script_file"
 
-# 1. Редактируем config.json в папке hello-world
-# Упрощаем работу с JSON-полями
-if [[ -f "$hello_world_config" ]]; then
-    sed -i "s|\"RPC URL\": \".*\"|\"RPC URL\": \"$rpc_url\"|g" "$hello_world_config"
-    sed -i "s|\"Private Key\": \".*\"|\"Private Key\": \"$private_key\"|g" "$hello_world_config"
-    sed -i "s|\"Registry\": \".*\"|\"Registry\": \"$registry_address\"|g" "$hello_world_config"
-    sed -i "s|\"snapshot_sync\": {.*}|\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": $snapshot_starting_sub_id, \"batch_size\": $snapshot_batch_size, \"sync_period\": $snapshot_sync_period }|g" "$hello_world_config"
-else
-    echo "Файл $hello_world_config не найден. Пропускаю..."
-fi
+    echo "Файл $script_file успешно обновлен."
+}
+
+# Функция для обновления Makefile
+update_makefile() {
+    local makefile=$1
+
+    sed -i "s/^sender.*/sender = $private_key/" "$makefile"
+    sed -i "s/^RPC_URL.*/RPC_URL = $rpc_url/" "$makefile"
+
+    echo "Файл $makefile успешно обновлен."
+}
+
+# Функция для обновления docker-compose.yaml
+update_docker_compose() {
+    local compose_file=$1
+
+    sed -i "s|ritualnetwork/infernet-node:.*|ritualnetwork/infernet-node:$infernet_version|" "$compose_file"
+
+    echo "Файл $compose_file успешно обновлен."
+}
+
+# Обновляем оба файла config.json
+update_config "$deploy_config"
+update_config "$hello_world_config"
+
+# Обновляем Deploy.s.sol
+update_deploy_script "$deploy_script"
+
+# Обновляем Makefile
+update_makefile "$makefile"
+
+# Обновляем docker-compose.yaml
+update_docker_compose "$docker_compose"
+
 
 
 
