@@ -8,30 +8,12 @@ makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefi
 docker_compose="/root/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
-if [[ ! -f $deploy_config ]]; then
-    echo "Файл $deploy_config не найден."
-    exit 1
-fi
-
-if [[ ! -f $hello_world_config ]]; then
-    echo "Файл $hello_world_config не найден."
-    exit 1
-fi
-
-if [[ ! -f $deploy_script ]]; then
-    echo "Файл $deploy_script не найден."
-    exit 1
-fi
-
-if [[ ! -f $makefile ]]; then
-    echo "Файл $makefile не найден."
-    exit 1
-fi
-
-if [[ ! -f $docker_compose ]]; then
-    echo "Файл $docker_compose не найден."
-    exit 1
-fi
+for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile" "$docker_compose"; do
+    if [[ ! -f $file ]]; then
+        echo "Файл $file не найден."
+        exit 1
+    fi
+done
 
 # Запрос ввода приватного ключа и версии infernet-node у пользователя
 read -p "Введите приватный ключ (с префиксом 0x): " private_key
@@ -87,7 +69,7 @@ update_makefile() {
     local makefile=$1
 
     sed -i "s/^sender.*/sender = $private_key/" "$makefile"
-    sed -i "s/^RPC_URL.*/RPC_URL = $rpc_url/" "$makefile"
+    sed -i "s|^RPC_URL.*|RPC_URL = $rpc_url|" "$makefile"
 
     echo "Файл $makefile успешно обновлен."
 }
@@ -113,7 +95,3 @@ update_makefile "$makefile"
 
 # Обновляем docker-compose.yaml
 update_docker_compose "$docker_compose"
-
-
-
-
