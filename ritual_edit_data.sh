@@ -38,7 +38,7 @@ edit_file "$deploy_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\":
 edit_file "$hello_world_config" '"RPC URL": \"[^\"]*\"' "\"RPC URL\": \"$rpc_url\""
 edit_file "$hello_world_config" '"Private Key": \"[^\"]*\"' "\"Private Key\": \"$private_key\""
 edit_file "$hello_world_config" '"Registry": \"[^\"]*\"' "\"Registry\": \"$registry_address\""
-edit_file "$hello_world_config" '"snapshot_sync": \{[^\}]*\}' "\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": 160000, \"batch_size\": $snapshot_batch_size, \"sync_period\": 30 }"
+edit_file "$hello_world_config" '"snapshot_sync": \{[^}]*\}' "\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": 160000, \"batch_size\": $snapshot_batch_size, \"sync_period\": 30 }"
 edit_file "$hello_world_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
 
 # 3. Редактируем Deploy.s.sol
