@@ -6,8 +6,12 @@ edit_file() {
     local search=$2
     local replace=$3
 
-    # Используем sed для замены строки в файле
-    sed -i '' "s|$search|$replace|g" "$file"  # Для macOS используем дополнительный аргумент '' для опции -i
+    if [[ -f "$file" ]]; then
+        # Используем sed для замены строки в файле
+        sed -i "s|$search|$replace|g" "$file"
+    else
+        echo "Файл $file не найден. Пропускаю..."
+    fi
 }
 
 # Путь к файлам конфигурации
@@ -37,7 +41,6 @@ edit_file "$deploy_config" '"batch_size": [0-9]*' "\"batch_size\": $snapshot_bat
 edit_file "$deploy_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
 
 # 2. Редактируем config.json в папке hello-world
-# Экранируем символы фигурных скобок для корректного использования в sed
 edit_file "$hello_world_config" '"RPC URL": \"[^\"]*\"' "\"RPC URL\": \"$rpc_url\""
 edit_file "$hello_world_config" '"Private Key": \"[^\"]*\"' "\"Private Key\": \"$private_key\""
 edit_file "$hello_world_config" '"Registry": \"[^\"]*\"' "\"Registry\": \"$registry_address\""
@@ -57,3 +60,4 @@ edit_file "$makefile" '"Register_address": \"[^\"]*\"' "\"Register_address\": \"
 # edit_file "$docker_compose" 'старое_значение' 'новое_значение'
 
 echo "Все изменения внесены. Выход из редакторов через Ctrl+X, Y, Enter"
+
