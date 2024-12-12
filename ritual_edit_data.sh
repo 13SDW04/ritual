@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Пути к файлам config.json, Deploy.s.sol, Makefile и docker-compose.yaml
-deploy_config="root/infernet-container-starter/deploy/config.json"
-hello_world_config="root/infernet-container-starter/projects/hello-world/container/config.json"
-deploy_script="root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
-makefile="root/infernet-container-starter/projects/hello-world/contracts/Makefile"
-docker_compose="root/infernet-container-starter/deploy/docker-compose.yaml"
+deploy_config="/root/infernet-container-starter/deploy/config.json"
+hello_world_config="/root/infernet-container-starter/projects/hello-world/container/config.json"
+deploy_script="/root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
+makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefile"
+docker_compose="/root/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
 if [[ ! -f $deploy_config ]]; then
