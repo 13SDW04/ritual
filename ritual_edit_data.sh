@@ -15,11 +15,11 @@ edit_file() {
 }
 
 # Путь к файлам конфигурации
-deploy_config=~/infernet-container-starter/deploy/config.json
-hello_world_config=~/infernet-container-starter/projects/hello-world/container/config.json
-deploy_script=~/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol
-makefile=~/infernet-container-starter/projects/hello-world/contracts/Makefile
-docker_compose=~/infernet-container-starter/deploy/docker-compose.yaml
+deploy_config=root/infernet-container-starter/deploy/config.json
+hello_world_config=root/infernet-container-starter/projects/hello-world/container/config.json
+deploy_script=root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol
+makefile=root/infernet-container-starter/projects/hello-world/contracts/Makefile
+docker_compose=root/infernet-container-starter/deploy/docker-compose.yaml
 
 # Запрос ввода значений у пользователя
 read -p "Введите RPC URL (например, https://mainnet.base.org/): " rpc_url
