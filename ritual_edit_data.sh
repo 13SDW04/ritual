@@ -7,7 +7,7 @@ edit_file() {
     local replace=$3
 
     # Используем sed для замены строки в файле
-    sed -i "s|$search|$replace|g" "$file"
+    sed -i '' "s|$search|$replace|g" "$file"  # Для macOS используем дополнительный аргумент '' для опции -i
 }
 
 # Путь к файлам конфигурации
@@ -37,6 +37,7 @@ edit_file "$deploy_config" '"batch_size": [0-9]*' "\"batch_size\": $snapshot_bat
 edit_file "$deploy_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
 
 # 2. Редактируем config.json в папке hello-world
+# Экранируем символы фигурных скобок для корректного использования в sed
 edit_file "$hello_world_config" '"RPC URL": \"[^\"]*\"' "\"RPC URL\": \"$rpc_url\""
 edit_file "$hello_world_config" '"Private Key": \"[^\"]*\"' "\"Private Key\": \"$private_key\""
 edit_file "$hello_world_config" '"Registry": \"[^\"]*\"' "\"Registry\": \"$registry_address\""
