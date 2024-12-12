@@ -40,6 +40,7 @@ update_config() {
        --argjson snapshot_starting_sub_id "$snapshot_starting_sub_id" \
        --argjson snapshot_batch_size "$snapshot_batch_size" \
        --argjson snapshot_sync_period "$snapshot_sync_period" \
+       --argjson startup_wait "1.0" \  # Добавляем изменение для startup_wait
        '
        .chain.rpc_url = $rpc_url |
        .chain.registry_address = $registry_address |
@@ -49,6 +50,7 @@ update_config() {
        .chain.snapshot_sync.starting_sub_id = $snapshot_starting_sub_id |
        .chain.snapshot_sync.batch_size = $snapshot_batch_size |
        .chain.snapshot_sync.sync_period = $snapshot_sync_period |
+       .chain.startup_wait = $startup_wait |  # Обновляем значение startup_wait
        del(.docker)
        ' "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
 
