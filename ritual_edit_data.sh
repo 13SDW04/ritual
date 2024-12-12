@@ -17,9 +17,6 @@ edit_file() {
 # Путь к файлам конфигурации
 deploy_config=~/infernet-container-starter/deploy/config.json
 hello_world_config=~/infernet-container-starter/projects/hello-world/container/config.json
-deploy_script=~/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol
-makefile=~/infernet-container-starter/projects/hello-world/contracts/Makefile
-docker_compose=~/infernet-container-starter/deploy/docker-compose.yaml
 
 # Запрос ввода значений у пользователя
 read -p "Введите RPC URL (например, https://mainnet.base.org/): " rpc_url
@@ -29,36 +26,17 @@ read -p "Введите значение sleep для snapshot_sync (напри�
 read -p "Введите значение starting_sub_id для snapshot_sync (например, 160000): " snapshot_starting_sub_id
 read -p "Введите значение batch_size для snapshot_sync (например, 800): " snapshot_batch_size
 read -p "Введите значение sync_period для snapshot_sync (например, 30): " snapshot_sync_period
-read -p "Введите значение trail_head_blocks (например, 3): " trail_head_blocks
-read -p "Введите версию (например, 1.4.0): " version
 
-# 1. Редактируем config.json в папке deploy
-edit_file "$deploy_config" '"RPC URL": \"[^\"]*\"' "\"RPC URL\": \"$rpc_url\""
-edit_file "$deploy_config" '"Private Key": \"[^\"]*\"' "\"Private Key\": \"$private_key\""
-edit_file "$deploy_config" '"Registry": \"[^\"]*\"' "\"Registry\": \"$registry_address\""
-edit_file "$deploy_config" '"sleep": [0-9]*' "\"sleep\": $snapshot_sleep"
-edit_file "$deploy_config" '"batch_size": [0-9]*' "\"batch_size\": $snapshot_batch_size"
-edit_file "$deploy_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
+# 1. Редактируем config.json в папке hello-world
+# Упрощаем работу с JSON-полями
+if [[ -f "$hello_world_config" ]]; then
+    sed -i "s|\"RPC URL\": \".*\"|\"RPC URL\": \"$rpc_url\"|g" "$hello_world_config"
+    sed -i "s|\"Private Key\": \".*\"|\"Private Key\": \"$private_key\"|g" "$hello_world_config"
+    sed -i "s|\"Registry\": \".*\"|\"Registry\": \"$registry_address\"|g" "$hello_world_config"
+    sed -i "s|\"snapshot_sync\": {.*}|\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": $snapshot_starting_sub_id, \"batch_size\": $snapshot_batch_size, \"sync_period\": $snapshot_sync_period }|g" "$hello_world_config"
+else
+    echo "Файл $hello_world_config не найден. Пропускаю..."
+fi
 
-# 2. Редактируем config.json в папке hello-world
-edit_file "$hello_world_config" '"RPC URL": \"[^\"]*\"' "\"RPC URL\": \"$rpc_url\""
-edit_file "$hello_world_config" '"Private Key": \"[^\"]*\"' "\"Private Key\": \"$private_key\""
-edit_file "$hello_world_config" '"Registry": \"[^\"]*\"' "\"Registry\": \"$registry_address\""
-edit_file "$hello_world_config" '"snapshot_sync": \{[^}]*\}' "\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": $snapshot_starting_sub_id, \"batch_size\": $snapshot_batch_size, \"sync_period\": $snapshot_sync_period }"
-edit_file "$hello_world_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
-
-# 3. Редактируем Deploy.s.sol
-edit_file "$deploy_script" 'RPC URL: .*' "RPC URL: $rpc_url"
-edit_file "$deploy_script" 'Private Key: .*' "Private Key: $private_key"
-edit_file "$deploy_script" 'version: [0-9.]*' "version: $version"
-
-# 4. Редактируем Makefile
-edit_file "$makefile" '"Register_address": \"[^\"]*\"' "\"Register_address\": \"$registry_address\""
-
-# 5. Внесение изменений в docker-compose.yaml (если необходимо, добавьте конкретные изменения здесь)
-# Пример для редактирования (замените на нужную строку или настройку):
-# edit_file "$docker_compose" 'старое_значение' 'новое_значение'
-
-echo "Все изменения внесены. Выход из редакторов через Ctrl+X, Y, Enter"
 
 
