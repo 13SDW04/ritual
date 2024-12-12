@@ -56,3 +56,4 @@ edit_file "$makefile" '"Register_address": \"[^\"]*\"' "\"Register_address\": \"
 echo "Все изменения внесены. Выход из редакторов через Ctrl+X, Y, Enter"
 
 
+
