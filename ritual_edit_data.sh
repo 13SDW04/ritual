@@ -27,21 +27,22 @@ read -p "Введите значение trail_head_blocks (например, 3)
 read -p "Введите версию (например, 1.4.0): " version
 
 # 1. Редактируем config.json в папке deploy
-edit_file "$deploy_config" '"snapshot_sync": {' "\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": 160000, \"batch_size\": $snapshot_batch_size, \"sync_period\": 30 }"
-edit_file "$deploy_config" '"trail_head_blocks": 3' "\"trail_head_blocks\": $trail_head_blocks"
+edit_file "$deploy_config" '"sleep": [0-9]*' "\"sleep\": $snapshot_sleep"
+edit_file "$deploy_config" '"batch_size": [0-9]*' "\"batch_size\": $snapshot_batch_size"
+edit_file "$deploy_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
 
 # 2. Редактируем config.json в папке hello-world
-edit_file "$hello_world_config" '"Register_address":' "\"Register_address\": \"$registry_address\""
+edit_file "$hello_world_config" '"Register_address": \"[^"]*\"' "\"Register_address\": \"$registry_address\""
 
 # 3. Редактируем Deploy.s.sol
-edit_file "$deploy_script" 'RPC URL:' "RPC URL: $rpc_url"
-edit_file "$deploy_script" 'Private Key:' "Private Key: $private_key"
+edit_file "$deploy_script" 'RPC URL: .*' "RPC URL: $rpc_url"
+edit_file "$deploy_script" 'Private Key: .*' "Private Key: $private_key"
 
 # 4. Редактируем Makefile
-edit_file "$makefile" '"Register_address":' "\"Register_address\": \"$registry_address\""
+edit_file "$makefile" '"Register_address": \"[^"]*\"' "\"Register_address\": \"$registry_address\""
 
 # 5. Обновляем версию в Deploy.s.sol
-edit_file "$deploy_script" 'version: ' "version: $version"
+edit_file "$deploy_script" 'version: [0-9.]*' "version: $version"
 
 # 6. Внесение изменений в docker-compose.yaml (если необходимо, добавьте конкретные изменения здесь)
 # Пример для редактирования (замените на нужную строку или настройку):
