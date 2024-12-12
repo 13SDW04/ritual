@@ -40,7 +40,6 @@ update_config() {
        --argjson snapshot_starting_sub_id "$snapshot_starting_sub_id" \
        --argjson snapshot_batch_size "$snapshot_batch_size" \
        --argjson snapshot_sync_period "$snapshot_sync_period" \
-       --argjson startup_wait "1.0" \  # Добавляем изменение для startup_wait
        '
        .chain.rpc_url = $rpc_url |
        .chain.registry_address = $registry_address |
