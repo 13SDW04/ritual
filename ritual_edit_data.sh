@@ -22,7 +22,9 @@ read -p "Введите RPC URL (например, https://mainnet.base.org/): "
 read -p "Введите приватный ключ (с префиксом 0x): " private_key
 read -p "Введите Registry адрес (например, 0x3B1554f346DFe5c482Bb4BA31b880c1C18412170): " registry_address
 read -p "Введите значение sleep для snapshot_sync (например, 3): " snapshot_sleep
+read -p "Введите значение starting_sub_id для snapshot_sync (например, 160000): " snapshot_starting_sub_id
 read -p "Введите значение batch_size для snapshot_sync (например, 800): " snapshot_batch_size
+read -p "Введите значение sync_period для snapshot_sync (например, 30): " snapshot_sync_period
 read -p "Введите значение trail_head_blocks (например, 3): " trail_head_blocks
 read -p "Введите версию (например, 1.4.0): " version
 
@@ -38,7 +40,7 @@ edit_file "$deploy_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\":
 edit_file "$hello_world_config" '"RPC URL": \"[^\"]*\"' "\"RPC URL\": \"$rpc_url\""
 edit_file "$hello_world_config" '"Private Key": \"[^\"]*\"' "\"Private Key\": \"$private_key\""
 edit_file "$hello_world_config" '"Registry": \"[^\"]*\"' "\"Registry\": \"$registry_address\""
-edit_file "$hello_world_config" '"snapshot_sync": \{[^}]*\}' "\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": 160000, \"batch_size\": $snapshot_batch_size, \"sync_period\": 30 }"
+edit_file "$hello_world_config" '"snapshot_sync": \{[^}]*\}' "\"snapshot_sync\": { \"sleep\": $snapshot_sleep, \"starting_sub_id\": $snapshot_starting_sub_id, \"batch_size\": $snapshot_batch_size, \"sync_period\": $snapshot_sync_period }"
 edit_file "$hello_world_config" '"trail_head_blocks": [0-9]*' "\"trail_head_blocks\": $trail_head_blocks"
 
 # 3. Редактируем Deploy.s.sol
@@ -54,6 +56,3 @@ edit_file "$makefile" '"Register_address": \"[^\"]*\"' "\"Register_address\": \"
 # edit_file "$docker_compose" 'старое_значение' 'новое_значение'
 
 echo "Все изменения внесены. Выход из редакторов через Ctrl+X, Y, Enter"
-
-
-
