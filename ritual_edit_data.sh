@@ -5,7 +5,7 @@ deploy_config="/root/infernet-container-starter/deploy/config.json"
 hello_world_config="/root/infernet-container-starter/projects/hello-world/container/config.json"
 deploy_script="/root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
 makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefile"
-docker_compose_file="/root/infernet-container-starter/deploy/docker-compose.yaml"
+docker_compose_file="$HOME/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
 for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile" "$docker_compose_file"; do
@@ -28,7 +28,7 @@ snapshot_sync_period=30
 read -p "Введите приватный ключ (с префиксом 0x): " private_key
 
 # Запрос ввода для Docker образа
-read -p "Введите новый образ Docker для node (например, 1.4.0): " docker_image
+read -p "Введите новый образ Docker для node (например, ritualnetwork/infernet-node:1.3.1): " docker_image
 
 # Функция для обновления JSON файла
 update_config() {
@@ -98,4 +98,3 @@ update_makefile "$makefile"
 
 # Обновляем docker-compose.yaml
 update_docker_compose "$docker_compose_file" "$docker_image"
-
