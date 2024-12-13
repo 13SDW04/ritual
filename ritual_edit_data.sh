@@ -5,7 +5,7 @@ deploy_config="/root/infernet-container-starter/deploy/config.json"
 hello_world_config="/root/infernet-container-starter/projects/hello-world/container/config.json"
 deploy_script="/root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
 makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefile"
-docker_compose_file="~/infernet-container-starter/deploy/docker-compose.yaml"
+docker_compose_file="/root/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
 for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile" "$docker_compose_file"; do
