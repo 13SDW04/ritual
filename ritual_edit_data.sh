@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# Пути к файлам config.json, Deploy.s.sol и Makefile
+# Пути к файлам config.json, Deploy.s.sol, Makefile и docker-compose.yaml
 deploy_config="/root/infernet-container-starter/deploy/config.json"
 hello_world_config="/root/infernet-container-starter/projects/hello-world/container/config.json"
 deploy_script="/root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
 makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefile"
+docker_compose_file="~/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
-for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile"; do
+for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile" "$docker_compose_file"; do
     if [[ ! -f $file ]]; then
         echo "Файл $file не найден."
         exit 1
@@ -25,6 +26,9 @@ snapshot_sync_period=30
 
 # Запрос ввода приватного ключа у пользователя
 read -p "Введите приватный ключ (с префиксом 0x): " private_key
+
+# Запрос ввода для Docker образа
+read -p "Введите новый образ Docker для node (например, 1.4.0): " docker_image
 
 # Функция для обновления JSON файла
 update_config() {
@@ -72,6 +76,16 @@ update_makefile() {
     echo "Файл $makefile успешно обновлен."
 }
 
+# Функция для обновления docker-compose.yaml
+update_docker_compose() {
+    local compose_file=$1
+    local docker_image=$2
+
+    sed -i "s|image: ritualnetwork/infernet-node:1.3.1|image: $docker_image|" "$compose_file"
+
+    echo "Файл $compose_file успешно обновлен."
+}
+
 # Обновляем оба файла config.json
 update_config "$deploy_config"
 update_config "$hello_world_config"
@@ -81,3 +95,7 @@ update_deploy_script "$deploy_script"
 
 # Обновляем Makefile
 update_makefile "$makefile"
+
+# Обновляем docker-compose.yaml
+update_docker_compose "$docker_compose_file" "$docker_image"
+
