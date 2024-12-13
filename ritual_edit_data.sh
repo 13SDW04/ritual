@@ -1,23 +1,18 @@
 #!/bin/bash
 
-# Пути к файлам config.json, Deploy.s.sol, Makefile и docker-compose.yaml
+# Пути к файлам config.json, Deploy.s.sol и Makefile
 deploy_config="/root/infernet-container-starter/deploy/config.json"
 hello_world_config="/root/infernet-container-starter/projects/hello-world/container/config.json"
 deploy_script="/root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
 makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefile"
-docker_compose="/root/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
-for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile" "$docker_compose"; do
+for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile"; do
     if [[ ! -f $file ]]; then
         echo "Файл $file не найден."
         exit 1
     fi
 done
-
-# Запрос ввода приватного ключа и версии infernet-node у пользователя
-read -p "Введите приватный ключ (с префиксом 0x): " private_key
-read -p "Введите версию infernet-node (например, 1.4.0): " infernet_version
 
 # Предустановленные значения
 rpc_url="https://mainnet.base.org/"
@@ -27,6 +22,9 @@ snapshot_sleep=3
 snapshot_starting_sub_id=160000
 snapshot_batch_size=800
 snapshot_sync_period=30
+
+# Запрос ввода приватного ключа у пользователя
+read -p "Введите приватный ключ (с префиксом 0x): " private_key
 
 # Функция для обновления JSON файла
 update_config() {
@@ -40,8 +38,7 @@ update_config() {
        --argjson snapshot_starting_sub_id "$snapshot_starting_sub_id" \
        --argjson snapshot_batch_size "$snapshot_batch_size" \
        --argjson snapshot_sync_period "$snapshot_sync_period" \
-       --argjson startup_wait "1.0" \  # Добавляем изменение для startup_wait
-       '
+       ' \
        .chain.rpc_url = $rpc_url |
        .chain.registry_address = $registry_address |
        .chain.trail_head_blocks = $trail_head_blocks |
@@ -50,7 +47,6 @@ update_config() {
        .chain.snapshot_sync.starting_sub_id = $snapshot_starting_sub_id |
        .chain.snapshot_sync.batch_size = $snapshot_batch_size |
        .chain.snapshot_sync.sync_period = $snapshot_sync_period |
-       .chain.startup_wait = $startup_wait |  # Обновляем значение startup_wait
        del(.docker)
        ' "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
 
@@ -76,15 +72,6 @@ update_makefile() {
     echo "Файл $makefile успешно обновлен."
 }
 
-# Функция для обновления docker-compose.yaml
-update_docker_compose() {
-    local compose_file=$1
-
-    sed -i "s|ritualnetwork/infernet-node:.*|ritualnetwork/infernet-node:$infernet_version|" "$compose_file"
-
-    echo "Файл $compose_file успешно обновлен."
-}
-
 # Обновляем оба файла config.json
 update_config "$deploy_config"
 update_config "$hello_world_config"
@@ -93,7 +80,4 @@ update_config "$hello_world_config"
 update_deploy_script "$deploy_script"
 
 # Обновляем Makefile
-update_makefile "$makefile"
-
-# Обновляем docker-compose.yaml
-update_docker_compose "$docker_compose"
+update_makefile "$makefile
