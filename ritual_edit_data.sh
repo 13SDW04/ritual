@@ -5,7 +5,7 @@ deploy_config="/root/infernet-container-starter/deploy/config.json"
 hello_world_config="/root/infernet-container-starter/projects/hello-world/container/config.json"
 deploy_script="/root/infernet-container-starter/projects/hello-world/contracts/script/Deploy.s.sol"
 makefile="/root/infernet-container-starter/projects/hello-world/contracts/Makefile"
-docker_compose_file="$HOME/infernet-container-starter/deploy/docker-compose.yaml"
+docker_compose_file="/root/infernet-container-starter/deploy/docker-compose.yaml"
 
 # Проверяем, существуют ли файлы
 for file in "$deploy_config" "$hello_world_config" "$deploy_script" "$makefile" "$docker_compose_file"; do
@@ -79,11 +79,11 @@ update_makefile() {
 # Функция для обновления docker-compose.yaml
 update_docker_compose() {
     local compose_file=$1
-    local docker_image=$2
+    local new_image="ritualnetwork/infernet-node:1.4.0"
 
-    sed -i "s|image: ritualnetwork/infernet-node:1.3.1|image: $docker_image|" "$compose_file"
+    sed -i "s|image: ritualnetwork/infernet-node:1.3.1|image: $new_image|" "$compose_file"
 
-    echo "Файл $compose_file успешно обновлен."
+    echo "Файл $compose_file успешно обновлен с образом $new_image."
 }
 
 # Обновляем оба файла config.json
@@ -96,5 +96,5 @@ update_deploy_script "$deploy_script"
 # Обновляем Makefile
 update_makefile "$makefile"
 
-# Обновляем docker-compose.yaml
-update_docker_compose "$docker_compose_file" "$docker_image"
+# Обновляем docker-compose.yaml с новым образом
+update_docker_compose "$docker_compose_file"
