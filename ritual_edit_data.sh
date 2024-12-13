@@ -38,7 +38,7 @@ update_config() {
        --argjson snapshot_starting_sub_id "$snapshot_starting_sub_id" \
        --argjson snapshot_batch_size "$snapshot_batch_size" \
        --argjson snapshot_sync_period "$snapshot_sync_period" \
-       ' \
+       ' 
        .chain.rpc_url = $rpc_url |
        .chain.registry_address = $registry_address |
        .chain.trail_head_blocks = $trail_head_blocks |
@@ -80,4 +80,4 @@ update_config "$hello_world_config"
 update_deploy_script "$deploy_script"
 
 # Обновляем Makefile
-update_makefile "$makefile
+update_makefile "$makefile"
